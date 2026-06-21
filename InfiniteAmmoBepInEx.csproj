@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- ====================================================================
+       EDIT THIS ONE LINE: point it at your Nuclear Option install folder
+       (the folder that contains NuclearOption.exe).
+       Default below is the common Steam path. NOMM installs BepInEx 5
+       (mono) into this same folder.
+       ==================================================================== -->
+  <PropertyGroup>
+    <GamePath>E:\SlowGames\steamapps\common\Nuclear Option</GamePath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>NuclearOption-InfiniteAmmo</AssemblyName>
+    <LangVersion>latest</LangVersion>
+    <!-- Game/Unity/BepInEx assemblies already live in the game folder; don't copy them. -->
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GameManaged>$(GamePath)\NuclearOption_Data\Managed</GameManaged>
+    <BepInExCore>$(GamePath)\BepInEx\core</BepInExCore>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="BepInEx">
+      <HintPath>$(BepInExCore)\BepInEx.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(GameManaged)\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>$(GameManaged)\UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(GameManaged)\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <!-- Player/Aircraft derive from Mirage's NetworkBehaviour. -->
+    <Reference Include="Mirage">
+      <HintPath>$(GameManaged)\Mirage.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>
