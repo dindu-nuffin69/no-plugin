@@ -62,12 +62,24 @@ namespace InfiniteAmmoBepInEx
             {
                 foreach (var ws in aircraft.weaponStations)
                 {
-                    if (ws == null || ws.Cargo || ws.FullAmmo <= 0) continue;
-                    bool needs = _keepTopped.Value ? ws.Ammo < ws.FullAmmo : ws.Ammo == 0;
+                    if (ws == null || ws.Cargo) continue;
+
+                    // WeaponStation.Ammo/FullAmmo are CACHED ints. The game only recomputes them
+                    // (via AccountAmmo) for a station that is actively firing or selected — and on
+                    // the client path UpdateLastFired just does "Ammo -= roundsFired", which can drift.
+                    // So a linked / non-selected gun stays at a stale, non-zero Ammo even when its
+                    // real per-weapon ammo is empty, and an "== 0" test never fires for it (the bug:
+                    // only the selected gun refilled). Recompute from the live per-weapon ammo first
+                    // so empty detection is accurate for EVERY station.
+                    ws.AccountAmmo();
+                    if (ws.FullAmmo <= 0) continue;
+
+                    bool needs = _keepTopped.Value ? ws.Ammo < ws.FullAmmo : ws.Ammo <= 0;
                     if (needs)
                     {
+                        int before = ws.Ammo;
                         ws.Rearm();
-                        Verbose($"Rearmed {aircraft.definition.name}'s {ws.WeaponInfo.weaponName}");
+                        Verbose($"Rearmed {aircraft.definition.name}'s {ws.WeaponInfo.weaponName} ({before}/{ws.FullAmmo} -> {ws.Ammo})");
                     }
                 }
             }
